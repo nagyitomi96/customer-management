@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface CustomerRepository extends JpaRepository<Customer, Long>
 {
     @Query("SELECT AVG(c.age) FROM Customer c")
-    Double findAverageAge();
+    Float findAverageAge();
 }

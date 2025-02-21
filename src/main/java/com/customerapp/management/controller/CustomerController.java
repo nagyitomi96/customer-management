@@ -6,8 +6,8 @@ import com.customerapp.management.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -19,62 +19,56 @@ public class CustomerController
     private CustomerService customerService;
 
     @GetMapping
-    public List<Customer> getAllCustomers()
+    public List<CustomerDTO> getAllCustomers()
     {
         return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id)
+    public CustomerDTO getCustomerById(@PathVariable Long id)
     {
-        return customerService.getCustomerById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return customerService.getCustomerById(id).
+                                orElseThrow(() ->
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody @Valid CustomerDTO customerDTO)
+    @ResponseStatus(HttpStatus.CREATED)
+    public CustomerDTO createCustomer(@RequestBody @Valid CustomerDTO customerDTO)
     {
-        Customer customer = new Customer();
-        customer.setName(customerDTO.name());
-        customer.setEmail(customerDTO.email());
-        customer.setAge(customerDTO.age());
-        customer.setCity(customerDTO.city());
-        customer.setPhoneNumber(customerDTO.phoneNumber());
-        customer.setAddress(customerDTO.address());
-        customer.setActive(customerDTO.isActive());
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(customerService.createCustomer(customer));
+        return customerService.createCustomer(customerDTO);
     }
 
-
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(
+    public CustomerDTO updateCustomer(
             @PathVariable Long id,
             @RequestBody @Valid CustomerDTO updatedCustomerDTO
     ) {
         return customerService.updateCustomer(id, updatedCustomerDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCustomer(@PathVariable Long id)
     {
-        customerService.deleteCustomer(id);
-        return ResponseEntity.noContent().build();
+        boolean deleted = customerService.deleteCustomer(id);
+
+        if (!deleted)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        }
     }
 
     @GetMapping("/average-age")
-    public ResponseEntity<Double> getAverageAge()
+    public Float getAverageAge()
     {
-        return ResponseEntity.ok(customerService.getAverageAge());
+        return customerService.getAverageAge();
     }
 
     @GetMapping("/age-range")
-    public ResponseEntity<List<Customer>> getCustomersBetween18And40()
+    public List<Customer>getCustomersBetween18And40()
     {
-        return ResponseEntity.ok(customerService.getCustomersBetween18And40());
+        return customerService.getCustomersBetween18And40();
     }
 }

@@ -1,15 +1,12 @@
 package com.customerapp.management.entity;
 
+import com.customerapp.management.dto.CustomerDTO;
 import jakarta.persistence.*;
-import lombok.*;
 import jakarta.validation.constraints.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "customers")
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Customer
 {
     @Id
@@ -22,84 +19,10 @@ public class Customer
     @Email(message = "Invalid email format")
     private String email;
 
-    @Min(value = 18, message = "Age must be at least 18")
     private int age;
 
     @NotBlank(message = "City is required")
     private String city;
-
-    public @NotBlank(message = "Name is required") String getName() {
-        return name;
-    }
-
-    public void setName(@NotBlank(message = "Name is required") String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public @Email(message = "Invalid email format") String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@Email(message = "Invalid email format") String email) {
-        this.email = email;
-    }
-
-    @Min(value = 18, message = "Age must be at least 18")
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(@Min(value = 18, message = "Age must be at least 18") int age) {
-        this.age = age;
-    }
-
-    public @NotBlank(message = "City is required") String getCity() {
-        return city;
-    }
-
-    public void setCity(@NotBlank(message = "City is required") String city) {
-        this.city = city;
-    }
-
-    public @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number") String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(@Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number") String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
 
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number")
     private String phoneNumber;
@@ -112,10 +35,139 @@ public class Customer
 
     private boolean isActive;
 
-    @PrePersist
-    protected void onCreate()
+    public Customer()
     {
         this.registrationDate = new Date();
     }
 
+    public Customer(CustomerDTO dto)
+    {
+        this.name = dto.name();
+        this.email = dto.email();
+        this.age = dto.age();
+        this.city = dto.city();
+        this.phoneNumber = dto.phoneNumber();
+        this.address = dto.address();
+        this.isActive = dto.isActive();
+        this.registrationDate = new Date();
+    }
+
+    public Customer(Long id, String name, String email, int age, String city, String phoneNumber, String address, boolean isActive, Date registrationDate)
+    {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.age = age;
+        this.city = city;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.isActive = isActive;
+        this.registrationDate = registrationDate;
+    }
+
+    public CustomerDTO toDTO()
+    {
+        return new CustomerDTO(name, email, age, city, phoneNumber, address, isActive);
+    }
+
+    public void updateFromDTO(CustomerDTO dto)
+    {
+        this.name = dto.name();
+        this.email = dto.email();
+        this.age = dto.age();
+        this.city = dto.city();
+        this.phoneNumber = dto.phoneNumber();
+        this.address = dto.address();
+        this.isActive = dto.isActive();
+    }
+
+    public Long getId()
+    {
+        return id;
+    }
+
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    public int getAge()
+    {
+        return age;
+    }
+
+    public void setAge(int age)
+    {
+        this.age = age;
+    }
+
+    public String getCity()
+    {
+        return city;
+    }
+
+    public void setCity(String city)
+    {
+        this.city = city;
+    }
+
+    public String getPhoneNumber()
+    {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress()
+    {
+        return address;
+    }
+
+    public void setAddress(String address)
+    {
+        this.address = address;
+    }
+
+    public Date getRegistrationDate()
+    {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate)
+    {
+        this.registrationDate = registrationDate;
+    }
+
+    public boolean isActive()
+    {
+        return isActive;
+    }
+
+    public void setActive(boolean active)
+    {
+        isActive = active;
+    }
 }

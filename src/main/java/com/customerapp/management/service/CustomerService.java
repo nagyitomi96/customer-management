@@ -6,7 +6,6 @@ import com.customerapp.management.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,27 +16,37 @@ public class CustomerService
     @Autowired
     private CustomerRepository customerRepository;
 
-    public List<Customer> getAllCustomers()
+    public List<CustomerDTO> getAllCustomers()
     {
-        return customerRepository.findAll();
+        return customerRepository.findAll().stream()
+                .map(Customer::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Customer> getCustomerById(Long id)
+    public Optional<CustomerDTO> getCustomerById(Long id)
     {
-        return customerRepository.findById(id);
+        return customerRepository.findById(id)
+                .map(Customer::toDTO);
     }
 
-    public Customer createCustomer(Customer customer)
+    public CustomerDTO createCustomer(CustomerDTO customerDTO)
     {
-        return customerRepository.save(customer);
+        Customer customer = customerDTO.toEntity();
+        customer = customerRepository.save(customer);
+        return customer.toDTO();
     }
 
-    public void deleteCustomer(Long id)
+    public boolean deleteCustomer(Long id)
     {
+        if (!customerRepository.existsById(id))
+        {
+            return false;
+        }
         customerRepository.deleteById(id);
+        return true;
     }
 
-    public Double getAverageAge()
+    public Float getAverageAge()
     {
         return customerRepository.findAverageAge();
     }
@@ -49,18 +58,11 @@ public class CustomerService
                 .collect(Collectors.toList());
     }
 
-    public Optional<Customer> updateCustomer(Long id, CustomerDTO updatedCustomerDTO)
+    public Optional<CustomerDTO> updateCustomer(Long id, CustomerDTO updatedCustomerDTO)
     {
         return customerRepository.findById(id).map(existingCustomer -> {
-            existingCustomer.setName(updatedCustomerDTO.name());
-            existingCustomer.setEmail(updatedCustomerDTO.email());
-            existingCustomer.setAge(updatedCustomerDTO.age());
-            existingCustomer.setCity(updatedCustomerDTO.city());
-            existingCustomer.setPhoneNumber(updatedCustomerDTO.phoneNumber());
-            existingCustomer.setAddress(updatedCustomerDTO.address());
-            existingCustomer.setActive(updatedCustomerDTO.isActive());
-
-            return customerRepository.save(existingCustomer);
+            existingCustomer.updateFromDTO(updatedCustomerDTO);
+            return customerRepository.save(existingCustomer).toDTO();
         });
     }
 
