@@ -3,6 +3,7 @@ package com.customerapp.management.controller;
 import com.customerapp.management.dto.CustomerDTO;
 import com.customerapp.management.entity.Customer;
 import com.customerapp.management.service.CustomerService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,7 @@ public class CustomerController
     }
 
     @DeleteMapping("/{id}")
+    @ApiResponse(responseCode = "204", description = "Customer deleted successfully")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCustomer(@PathVariable Long id)
     {
