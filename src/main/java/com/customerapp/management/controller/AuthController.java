@@ -27,7 +27,8 @@ public class AuthController
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequestDTO request) {
+    public ResponseEntity<?> login(@RequestBody AuthRequestDTO request)
+    {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             String token = jwtUtil.generateToken(request.getUsername());
@@ -38,10 +39,13 @@ public class AuthController
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthRequestDTO request) {
-        if (userService.findByUsername(request.getUsername()).isPresent()) {
+    public ResponseEntity<?> register(@RequestBody AuthRequestDTO request)
+    {
+        if (userService.findByUsername(request.getUsername()).isPresent())
+        {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
         }
+
         userService.createUser(request.getUsername(), request.getPassword());
         return ResponseEntity.ok("User registered successfully");
     }

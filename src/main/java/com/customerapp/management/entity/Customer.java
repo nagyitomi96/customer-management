@@ -3,6 +3,8 @@ package com.customerapp.management.entity;
 import com.customerapp.management.dto.CustomerDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.util.Date;
 
 @Entity
@@ -31,6 +33,7 @@ public class Customer
 
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private Date registrationDate;
 
     private boolean isActive;
